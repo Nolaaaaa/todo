@@ -1,24 +1,17 @@
 import Vue from 'vue'
-import Todo from './todo'
+import App from './App'
+import ElementUI from 'element-ui';
+import 'element-ui/lib/theme-chalk/index.css';
+
+Vue.use(ElementUI);
 
 Vue.config.productionTip = false
 
 new Vue({
   el: '#app',
-  components: { Todo },
-  template: '<Todo/>',
-  created(){
+  components: { 
+    App 
   },
-  methods: {
-    addTodo(){
-      this.todoList.push({
-        title: this.newTodo,
-        createdAt: new Date(),
-        done: false // 添加一个 done 属性
-      })
-      console.log(this.todoList)
-      this.newTodo = ''
-    },
-  }
+  template: '<App/>',
 })
 
