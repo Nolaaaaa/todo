@@ -1,12 +1,16 @@
 <template>
   <div id="todo">
     <h1>TodoList</h1>
-    <div class="nwTask">
-      <el-input v-model="newTodo" placeholder="Add new Todo" @keyup.enter.native="addTodo"></el-input>
+    <div class="newTask">
+      <el-input ref = 'input' v-model="newTodo" placeholder="Add new Todo" @keyup.enter.native="addTodo"></el-input>
     </div>
     <ol class="todos">
-      <li v-for="todo in todoList" :key="todo.id">
-        <el-checkbox v-model="todo.checked">{{ todo.title }}</el-checkbox>
+      <li v-for="(todo, index) in todoList" :key="todo.id">
+        <div>
+          <el-checkbox v-model="todo.checked">{{ todo.title }}
+          </el-checkbox>
+          <i class="el-icon-edit" @click="editContent(index)"></i>
+        </div>
         <i class="el-icon-circle-close" @click="removeTodo(todo)"></i>
       </li>
     </ol>
@@ -23,7 +27,10 @@ export default {
       checked: false,
     }
   },
-  created: function(){
+  mounted() {
+      this.$refs['input'].focus()
+  },
+  created() {
     // 页面刷新后依然保留数据
     window.onbeforeunload = ()=>{       //页面刷新时调用
       let dataString = JSON.stringify(this.todoList)   //将todoList对象转化为JSON字符串 dataString
@@ -34,17 +41,21 @@ export default {
     this.todoList = oldData || []    //把数据赋值给todoList对象
   },
   methods: {
-    addTodo: function(){
+    addTodo() {
       this.todoList.push({
         title: this.newTodo,
         createdAt: new Date(),
-        done: false 
       })
       this.newTodo = ''
     },
-    removeTodo: function(todo){
+    removeTodo(todo) {
       let index = this.todoList.indexOf(todo) // Array.prototype.indexOf ES 5 新加的 API
       this.todoList.splice(index,1)
+    },
+    editContent(index) {
+      let todoTitle = this.todoList[index].title
+      this.newTodo = todoTitle
+      this.$refs['input'].focus()    //自动获取焦点
     }
   }
 }
@@ -52,15 +63,12 @@ export default {
 
 <style lang="scss">
 #todo { 
-  font-family: 'Avenir', Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  margin-top: 50px;
+  margin-top: 60px;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  .nwTask { 
+  .newTask { 
     width: 400px;
     @media (max-width: 500px) {width: 320px;}
     @media (max-width: 400px) {width: 280px;}
@@ -76,6 +84,11 @@ export default {
       display: flex; 
       justify-content: space-between; //左右排布
       align-items: center;   //x轴居中对齐
+      margin: 4px 0;
+      .el-icon-edit:before{
+        margin: 0 4px;
+        color: #2d83da;
+      }
       .el-icon-circle-close {   //删除按钮的样式
         color: rgb(250, 42, 15)
       }

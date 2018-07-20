@@ -9,7 +9,7 @@ export default {
     name: 'App',
     components: {
       Todo,
-    }
+    },
 }
 </script>
 
