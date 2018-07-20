@@ -71,12 +71,12 @@ export default {
   .newTask { 
     width: 400px;
     @media (max-width: 500px) {width: 320px;}
-    @media (max-width: 400px) {width: 280px;}
+    @media (max-width: 400px) {width: 240px;}
   }
   .todos { 
     width: 400px; 
     @media (max-width: 500px) {width: 320px;}
-    @media (max-width: 400px) {width: 280px;}
+    @media (max-width: 400px) {width: 240px;}
     display: flex;
     justify-content: flex-start;  
     flex-direction: column;
