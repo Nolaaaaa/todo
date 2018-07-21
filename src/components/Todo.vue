@@ -25,6 +25,7 @@ export default {
       newTodo: '',
       todoList: [],
       checked: false,
+      editIndex: null
     }
   },
   mounted() {
@@ -42,17 +43,27 @@ export default {
   },
   methods: {
     addTodo() {
-      this.todoList.push({
-        title: this.newTodo,
-        createdAt: new Date(),
-      })
-      this.newTodo = ''
+      // id 存不存在 这个列表中
+      // 如果不存在 就push
+      // 如果存在 就 edit
+      if(!this.newTodo) return 
+      if(!!this.editIndex) { 
+        this.todoList[this.editIndex].title = this.newTodo
+        this.newTodo = ''
+       }else{
+        this.todoList.push({
+          title: this.newTodo,
+          createdAt: new Date()
+        })
+        this.newTodo = ''
+       }
     },
     removeTodo(todo) {
       let index = this.todoList.indexOf(todo) // Array.prototype.indexOf ES 5 新加的 API
       this.todoList.splice(index,1)
     },
-    editContent(index) {
+    editContent(index){
+      this.editIndex = index
       let todoTitle = this.todoList[index].title
       this.newTodo = todoTitle
       this.$refs['input'].focus()    //自动获取焦点
