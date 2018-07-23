@@ -1,59 +1,25 @@
 <template>
-  <div>
-    <section id="sign" v-if="!currentUser">
-      <div>
-        <label><input type="radio" name="type" value="signUp" 
-          v-model="actionType">注册</label>
-        <label><input type="radio" name="type" value="login" 
-          v-model="actionType">登录</label>
-          <!-- <el-button  value="signUp" v-model="actionType">注册</el-button>
-          <el-button  value="login" v-model="actionType">登录</el-button> -->
-      </div>
-      <div class="signUp"  v-if="actionType == 'signUp'" >
-          <div class="formRow"> 
-            用户名<input type="text" v-model="formData.username">
-          </div>
-          <div class="formRow">
-            密码<input type="password" v-model="formData.password"
-            @keyup.enter="signUp" >
-          </div>
-          <!-- <div class="formRow">
-            确认密码<input type="password" v-model="formData.comfirmPassword" >
-          </div> -->
-          <div class="formActions">
-            <button value="" @click="signUp">注册</button>
-          </div>
-      </div>
-      <div class="login" v-if="actionType == 'login'">
-          <div class="formRow">
-            用户名<input type="text"  v-model="formData.username">
-          </div>
-          <div class="formRow">
-            密码<input type="password" v-model="formData.password"
-            @keyup.enter="login">
-          </div>
-          <div class="formActions">
-            <button value="" @click="login">登录</button>
-          </div>
-      </div>
-    </section>
-    <section id="todo" v-if="currentUser" >
-      <div> {{formData.username}} <button  @click="logout"> 登出 </button></div>
-      <h1>TodoList</h1>
-      <div class="newTask">
-        <el-input ref = 'input' v-model="newTodo" placeholder="Add new Todo" 
-        @keyup.enter.native="addTodo"></el-input>
-      </div>
-      <ol class="todos">
-        <li v-for="(todo, index) in todoList" :key="todo.id">
-          <div>
-            <el-checkbox v-model="todo.checked">{{ todo.title }}
-            </el-checkbox>
-            <i class="el-icon-edit" @click="editContent(index)"></i>
-          </div>
-          <i class="el-icon-circle-close" @click="removeTodo(todo)"></i>
-        </li>
-      </ol>
+<div>
+    <section class="todo" >
+        <div> 
+          <!-- {{formData.username}}  -->
+          <button  @click="logout"> 登出 </button>
+        </div>
+        <h1>TodoList</h1>
+        <div class="newTask">
+          <el-input ref = 'input' v-model="newTodo" placeholder="Add new Todo" 
+          @keyup.enter.native="addTodo"></el-input>
+        </div>
+        <ol class="todos">
+          <li v-for="(todo, index) in todoList" :key="todo.id">
+            <div>
+              <el-checkbox v-model="todo.checked">{{ todo.title }}
+              </el-checkbox>
+              <i class="el-icon-edit" @click="editContent(index)"></i>
+            </div>
+            <i class="el-icon-circle-close" @click="removeTodo(todo)"></i>
+          </li>
+        </ol>
     </section>
   </div>
 </template>
@@ -69,14 +35,7 @@ export default {
       newTodo: '',
       todoList: [],
       checked: false,
-      editIndex: null,
-      currentUser: null,
-      actionType: 'login',
-      formData: {
-          username: '',
-          password: '',
-          comfirmPassword: '',
-      },
+      editIndex: null, 
     }
   },
   mounted() {
@@ -91,9 +50,6 @@ export default {
     let oldDataString = window.localStorage.getItem('myTodos')  //通过window.localStorage读取"myTodos"中的数据
     let oldData = JSON.parse(oldDataString)  //将读取到的JSON字符串解析
     this.todoList = oldData || []    //把数据赋值给todoList对象
-
-    //保存用户登录状态
-    this.currentUser = this.getCurrentUser();
 
     //批量从云端获取AllTodos
     if(this.currentUser){
@@ -155,8 +111,10 @@ export default {
       if(!this.newTodo) return 
       if(this.editIndex || this.editIndex === 0) { 
         this.todoList[this.editIndex].title = this.newTodo
+        console.log(this.newTodo)
         this.newTodo = ''
       }else{
+        console.log(this.newTodo)
         this.todoList.push({
           title: this.newTodo,
           createdAt: new Date()
@@ -176,47 +134,15 @@ export default {
       this.newTodo = todoTitle
       this.$refs['input'].focus()    //输入框自动获取焦点
     },
-    signUp() {   //注册 _user
-      var user = new AV.User();
-      user.setUsername(this.formData.username); // 设置用户名
-      user.setPassword(this.formData.password); // 设置密码
-      user.signUp()
-      .then( (loggedInUser)=>{   //箭头函数方便使用this
-          // console.log(loggedInUser)
-          console.log('注册成功')
-          this.currentUser = this.getCurrentUser()  //把获取到的用户信息给loggedInUser
-      },  (error)=>{
-          console.log(error)
-      });
+    logout() {   //注册 _user
+      this.$emit("logout")
     },
-    login() {
-      AV.User.logIn(this.formData.username, this.formData.password)
-      .then((loggedInUser) => {
-          // console.log(loggedInUser)
-          this.currentUser = this.getCurrentUser()
-      }, function (error) {
-          console.log(error)
-      });
-    },
-    getCurrentUser() {
-      //检查用户是否登录
-      let current = AV.User.current()
-      if(current) {
-        let {id,createdAt,attributes:{username}} = current
-        return {id,username,createdAt}
-      }
-    },
-    logout() {
-      AV.User.logOut()
-      // 现在的 currentUser 是 null 了
-      this.currentUser = null
-    }
   }
 }
 </script>
 
 <style lang="scss">
-#todo { 
+.todo { 
   margin-top: 60px;
   display: flex;
   flex-direction: column;
