@@ -1,23 +1,16 @@
 <template>
     <div id="app">
-        <Sign />
-        <Todo />
+        <Todo/>
     </div>
 </template>
 <script>
 import Todo from './components/Todo'
-import Sign from './components/Sign'
 export default {
     name: 'App',
     components: {
-      Todo,
-      Sign,
+        Todo,
     },
 }
 </script>
-<style>
-#app{
-}
-</style>
 
 

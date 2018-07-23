@@ -1,35 +1,86 @@
 <template>
-  <div id="todo">
-    <h1>TodoList</h1>
-    <div class="newTask">
-      <el-input ref = 'input' v-model="newTodo" placeholder="Add new Todo" @keyup.enter.native="addTodo"></el-input>
-    </div>
-    <ol class="todos">
-      <li v-for="(todo, index) in todoList" :key="todo.id">
-        <div>
-          <el-checkbox v-model="todo.checked">{{ todo.title }}
-          </el-checkbox>
-          <i class="el-icon-edit" @click="editContent(index)"></i>
-        </div>
-        <i class="el-icon-circle-close" @click="removeTodo(todo)"></i>
-      </li>
-    </ol>
+  <div>
+    <section id="sign" v-if="!currentUser">
+      <div>
+        <label><input type="radio" name="type" value="signUp" 
+          v-model="actionType">注册</label>
+        <label><input type="radio" name="type" value="login" 
+          v-model="actionType">登录</label>
+          <!-- <el-button  value="signUp" v-model="actionType">注册</el-button>
+          <el-button  value="login" v-model="actionType">登录</el-button> -->
+      </div>
+      <div class="signUp"  v-if="actionType == 'signUp'" >
+          <div class="formRow"> 
+            用户名<input type="text" v-model="formData.username">
+          </div>
+          <div class="formRow">
+            密码<input type="password" v-model="formData.password"
+            @keyup.enter="signUp" >
+          </div>
+          <!-- <div class="formRow">
+            确认密码<input type="password" v-model="formData.comfirmPassword" >
+          </div> -->
+          <div class="formActions">
+            <button value="" @click="signUp">注册</button>
+          </div>
+      </div>
+      <div class="login" v-if="actionType == 'login'">
+          <div class="formRow">
+            用户名<input type="text"  v-model="formData.username">
+          </div>
+          <div class="formRow">
+            密码<input type="password" v-model="formData.password"
+            @keyup.enter="login">
+          </div>
+          <div class="formActions">
+            <button value="" @click="login">登录</button>
+          </div>
+      </div>
+    </section>
+    <section id="todo" v-if="currentUser" >
+      <div> {{formData.username}} <button  @click="logout"> 登出 </button></div>
+      <h1>TodoList</h1>
+      <div class="newTask">
+        <el-input ref = 'input' v-model="newTodo" placeholder="Add new Todo" 
+        @keyup.enter.native="addTodo"></el-input>
+      </div>
+      <ol class="todos">
+        <li v-for="(todo, index) in todoList" :key="todo.id">
+          <div>
+            <el-checkbox v-model="todo.checked">{{ todo.title }}
+            </el-checkbox>
+            <i class="el-icon-edit" @click="editContent(index)"></i>
+          </div>
+          <i class="el-icon-circle-close" @click="removeTodo(todo)"></i>
+        </li>
+      </ol>
+    </section>
   </div>
 </template>
 
 <script>
+import AV from 'leancloud-storage'
+
 export default {
   name: 'Todo',
+  // props : ['currentUser'],
   data() {
     return {
       newTodo: '',
       todoList: [],
       checked: false,
-      editIndex: null
+      editIndex: null,
+      currentUser: null,
+      actionType: 'login',
+      formData: {
+          username: '',
+          password: '',
+          comfirmPassword: '',
+      },
     }
   },
   mounted() {
-      this.$refs['input'].focus()
+      this.$refs['input'].focus()  //光标
   },
   created() {
     // 页面刷新后依然保留数据
@@ -38,35 +89,127 @@ export default {
       window.localStorage.setItem('myTodos', dataString) //通过window.localStorage添加dataString数据到"myTodos"中
     }
     let oldDataString = window.localStorage.getItem('myTodos')  //通过window.localStorage读取"myTodos"中的数据
-    let oldData = JSON.parse(oldDataString)  //将读取到的JSON字符串解析JSON字符串
+    let oldData = JSON.parse(oldDataString)  //将读取到的JSON字符串解析
     this.todoList = oldData || []    //把数据赋值给todoList对象
+
+    //保存用户登录状态
+    this.currentUser = this.getCurrentUser();
+
+    //批量从云端获取AllTodos
+    if(this.currentUser){
+      var query = new AV.Query('AllTodos')
+      query.find()
+      .then( (todos) => {
+        // console.log(todos) //打印出的是在云端的数组
+        let avAllTodos = todos[0]
+        let id = avAllTodos.id   //找到todos数组的第一个对象的id
+        this.todoList = JSON.parse(avAllTodos.attributes.content) //解析attributes.content中的JSON字符串
+        this.todoList.id = id  //把获取到的id给todoList.id 
+      }, function(error) {
+        console.error(error) 
+      })
+    }
   },
   methods: {
+    updateAVTodo(){
+      let dataString = JSON.stringify(this.todoList) 
+      let avTodos = AV.Object.createWithoutData('AllTodos', this.todoList.id)
+      avTodos.set('content', dataString)
+      avTodos.save().then(()=>{
+        console.log('更新成功')
+      })
+    },
+    saveAVTodo() {
+      // 如果还没有对象，就新建一个对象到Lean，只会存在一个对象
+      // 单用户权限设置
+      // 新建一个对象
+      let dataString = JSON.stringify(this.todoList)
+      var AVTodos = AV.Object.extend('AllTodos')
+      var avtodos = new AVTodos()
+      avtodos.set('content', dataString)
+      // 新建一个 ACL 实例
+      var acl = new AV.ACL();
+      acl.setPublicReadAccess(true);  //能读
+      acl.setWriteAccess(AV.User.current(),true);  //能写
+      // 将 ACL 实例赋予对象 设置访问控制
+      avtodos.setACL(acl)
+      //保存到云端
+      avtodos.save().then((todo) => {
+        console.log('保存成功')
+        this.todoList.id = todo.id
+      }, function (error) {
+        console.log(error)
+      })
+    },
+    saveOrUpdateTodo() {
+      if(this.todoList.id){
+        this.updateAVTodo()
+      }else{
+        this.saveAVTodo()
+      }
+    },
     addTodo() {
       // id 存不存在 这个列表中
       // 如果不存在 就push
       // 如果存在 就 edit
       if(!this.newTodo) return 
-      if(!!this.editIndex) { 
+      if(this.editIndex || this.editIndex === 0) { 
         this.todoList[this.editIndex].title = this.newTodo
         this.newTodo = ''
-       }else{
+      }else{
         this.todoList.push({
           title: this.newTodo,
           createdAt: new Date()
         })
         this.newTodo = ''
-       }
+      }
+      this.saveOrUpdateTodo() 
     },
     removeTodo(todo) {
       let index = this.todoList.indexOf(todo) // Array.prototype.indexOf ES 5 新加的 API
       this.todoList.splice(index,1)
+      this.saveOrUpdateTodo() 
     },
     editContent(index){
       this.editIndex = index
       let todoTitle = this.todoList[index].title
       this.newTodo = todoTitle
-      this.$refs['input'].focus()    //自动获取焦点
+      this.$refs['input'].focus()    //输入框自动获取焦点
+    },
+    signUp() {   //注册 _user
+      var user = new AV.User();
+      user.setUsername(this.formData.username); // 设置用户名
+      user.setPassword(this.formData.password); // 设置密码
+      user.signUp()
+      .then( (loggedInUser)=>{   //箭头函数方便使用this
+          // console.log(loggedInUser)
+          console.log('注册成功')
+          this.currentUser = this.getCurrentUser()  //把获取到的用户信息给loggedInUser
+      },  (error)=>{
+          console.log(error)
+      });
+    },
+    login() {
+      AV.User.logIn(this.formData.username, this.formData.password)
+      .then((loggedInUser) => {
+          // console.log(loggedInUser)
+          this.currentUser = this.getCurrentUser()
+      }, function (error) {
+          console.log(error)
+      });
+    },
+    getCurrentUser() {
+      //检查用户是否登录
+      let current = AV.User.current()
+      if(current) {
+        let {id,createdAt,attributes:{username}} = current
+        return {id,username,createdAt}
+      }
+    },
+    logout() {
+      AV.User.logOut()
+      // 现在的 currentUser 是 null 了
+      this.currentUser = null
     }
   }
 }
