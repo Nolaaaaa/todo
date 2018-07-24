@@ -1,13 +1,13 @@
 <template>
 <div>
     <section class="todo" >
-        <div> 
+        <div>
           <!-- {{formData.username}}  -->
           <button  @click="logout"> 登出 </button>
         </div>
         <h1>TodoList</h1>
         <div class="newTask">
-          <el-input ref = 'input' v-model="newTodo" placeholder="Add new Todo" 
+          <el-input ref = 'input' v-model="newTodo" placeholder="Add new Todo"
           @keyup.enter.native="addTodo"></el-input>
         </div>
         <ol class="todos">
@@ -29,19 +29,18 @@ import AV from 'leancloud-storage'
 
 export default {
   name: 'Todo',
-  // props : ['currentUser'],
+  props : ['currentUser'],
   data() {
     return {
       newTodo: '',
       todoList: [],
       checked: false,
-      editIndex: null, 
+      editIndex: null,
+
     }
   },
   mounted() {
-      this.$refs['input'].focus()  //光标
-  },
-  created() {
+    this.$refs['input'].focus()  //光标
     // 页面刷新后依然保留数据
     window.onbeforeunload = ()=>{       //页面刷新时调用
       let dataString = JSON.stringify(this.todoList)   //将todoList对象转化为JSON字符串 dataString
@@ -60,15 +59,15 @@ export default {
         let avAllTodos = todos[0]
         let id = avAllTodos.id   //找到todos数组的第一个对象的id
         this.todoList = JSON.parse(avAllTodos.attributes.content) //解析attributes.content中的JSON字符串
-        this.todoList.id = id  //把获取到的id给todoList.id 
+        this.todoList.id = id  //把获取到的id给todoList.id
       }, function(error) {
-        console.error(error) 
+        console.error(error)
       })
     }
   },
   methods: {
     updateAVTodo(){
-      let dataString = JSON.stringify(this.todoList) 
+      let dataString = JSON.stringify(this.todoList)
       let avTodos = AV.Object.createWithoutData('AllTodos', this.todoList.id)
       avTodos.set('content', dataString)
       avTodos.save().then(()=>{
@@ -108,8 +107,8 @@ export default {
       // id 存不存在 这个列表中
       // 如果不存在 就push
       // 如果存在 就 edit
-      if(!this.newTodo) return 
-      if(this.editIndex || this.editIndex === 0) { 
+      if(!this.newTodo) return
+      if(this.editIndex || this.editIndex === 0) {
         this.todoList[this.editIndex].title = this.newTodo
         console.log(this.newTodo)
         this.newTodo = ''
@@ -121,12 +120,12 @@ export default {
         })
         this.newTodo = ''
       }
-      this.saveOrUpdateTodo() 
+      this.saveOrUpdateTodo()
     },
     removeTodo(todo) {
       let index = this.todoList.indexOf(todo) // Array.prototype.indexOf ES 5 新加的 API
       this.todoList.splice(index,1)
-      this.saveOrUpdateTodo() 
+      this.saveOrUpdateTodo()
     },
     editContent(index){
       this.editIndex = index
@@ -142,26 +141,26 @@ export default {
 </script>
 
 <style lang="scss">
-.todo { 
+.todo {
   margin-top: 60px;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  .newTask { 
+  .newTask {
     width: 400px;
     @media (max-width: 500px) {width: 320px;}
     @media (max-width: 400px) {width: 240px;}
   }
-  .todos { 
-    width: 400px; 
+  .todos {
+    width: 400px;
     @media (max-width: 500px) {width: 320px;}
     @media (max-width: 400px) {width: 240px;}
     display: flex;
-    justify-content: flex-start;  
+    justify-content: flex-start;
     flex-direction: column;
     li {
-      display: flex; 
+      display: flex;
       justify-content: space-between; //左右排布
       align-items: center;   //x轴居中对齐
       margin: 4px 0;
@@ -182,5 +181,5 @@ export default {
       }
     }
   }
-} 
+}
 </style>
