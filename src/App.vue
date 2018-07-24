@@ -5,8 +5,8 @@
         SignUpOrLogin 是一个包括 登录 和 注册的模块 代码不是很多就不需要拆
         todo 就是一个展示用户 todo 的模块
         一共两个模块即可 -->
-        <SignUpOrLogin v-if="!currentUser" @signUp="signUp" @login="login"/> 
-        <Todo v-else @logout="logout"/>
+        <SignUpOrLogin v-if="!currentUser" @signUp="signUp" @login="login"/>
+        <Todo v-else @logout="logout" :currentUser="currentUser"/>
     </div>
 </template>
 <script>
@@ -58,13 +58,13 @@ export default {
             }, function (error) {
                 console.log(error)
             });
-        },    
+        },
         logout() {
             AV.User.logOut()
             // 现在的 currentUser 是 null 了
             this.currentUser = null
         }
-        
+
     }
 }
 </script>
