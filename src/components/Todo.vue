@@ -1,6 +1,6 @@
 <template>
 <div>
-    <section class="todo" >
+    <section id="todo" >
         <div>
           <!-- {{formData.username}}  -->
           <button  @click="logout"> 登出 </button>
@@ -113,7 +113,6 @@ export default {
         console.log(this.newTodo)
         this.newTodo = ''
       }else{
-        console.log(this.newTodo)
         this.todoList.push({
           title: this.newTodo,
           createdAt: new Date()
@@ -141,7 +140,7 @@ export default {
 </script>
 
 <style lang="scss">
-.todo {
+#todo {
   margin-top: 60px;
   display: flex;
   flex-direction: column;
