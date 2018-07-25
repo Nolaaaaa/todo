@@ -3,7 +3,8 @@
     <section id="todo" >
         <div>
           <!-- {{formData.username}}  -->
-          <button  @click="logout"> 登出 </button>
+          <!-- <button  @click="logout"> 登出 </button> -->
+          <el-button @click="logout" type="info">登出</el-button>
         </div>
         <h1>TodoList</h1>
         <div class="newTask">
@@ -141,11 +142,12 @@ export default {
 
 <style lang="scss">
 #todo {
-  margin-top: 60px;
+  margin-top: 80px;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  h1 {font-size: 26px; margin-bottom: 30px;}
   .newTask {
     width: 400px;
     @media (max-width: 500px) {width: 320px;}

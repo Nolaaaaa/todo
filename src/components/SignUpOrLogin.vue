@@ -34,8 +34,8 @@
       </div>
 
       <div class="button">
-        <el-button @click="actionType = 'signUp'">注册</el-button>
-        <el-button @click="actionType = 'login'">登录</el-button>
+        <el-button @click="actionType = 'signUp'">Sign up</el-button>
+        <el-button @click="actionType = 'login'">Login</el-button>
       </div>
 
     </section>
@@ -74,13 +74,26 @@
     section { background: #fff; box-shadow: 0 10px 30px 0 rgba(0, 0, 0, .15); border-radius: 4px;
       padding: 30px 20px; width: 400px;
       .formRow { border: 1px solid #c1c1c1; padding: 4px 8px;
-        > p { color: #c1c1c1; }
+        p { color: #c1c1c1; }
         &:first-child { border-bottom: 0; }
-        > input { outline: none; border: 0; }
+        input { outline: none; border: 0; }
       }
       .formActions { margin: 8px 0; }
+      .button{
+            .el-button {
+                color: black;
+            }
+            .el-button:hover {
+                background: black;
+                color: white;
+                border: black;
+            }
+            .el-button:focus {
+                background: black;
+                color: white;
+            }
+      }
     }
   }
-
 </style>
 
