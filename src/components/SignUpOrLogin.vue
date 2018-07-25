@@ -1,6 +1,10 @@
 <template>
   <div id='signUpOrLogin'>
     <section>
+      <div class="button">
+        <el-button @click="actionType = 'signUp'">Sign up</el-button>
+        <el-button @click="actionType = 'login'">Login</el-button>
+      </div>
       <div class="signUp" v-if="actionType == 'signUp'">
         <div class="formRow">
           <p>UserName</p>
@@ -17,7 +21,6 @@
           <button value="" @click="signUp">注册</button>
         </div>
       </div>
-
       <div class="login" v-if="actionType == 'login'">
         <div class="formRow">
           <p>UserName</p>
@@ -32,12 +35,6 @@
           <button value="" @click="login">登录</button>
         </div>
       </div>
-
-      <div class="button">
-        <el-button @click="actionType = 'signUp'">Sign up</el-button>
-        <el-button @click="actionType = 'login'">Login</el-button>
-      </div>
-
     </section>
   </div>
 </template>
