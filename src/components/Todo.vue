@@ -71,6 +71,8 @@ export default {
       avTodos.set('content', dataString)
       avTodos.save().then(()=>{
         console.log('更新成功')
+        console.log(this.todoList.id)
+        console.log(avTodos)
       })
     },
     saveAVTodo() {
@@ -109,8 +111,8 @@ export default {
       if(!this.newTodo) return
       if(this.editIndex || this.editIndex === 0) {
         this.todoList[this.editIndex].title = this.newTodo
-        console.log(this.newTodo)
         this.newTodo = ''
+        this.editIndex = null   //不写这句的话前一次的editIndex会一只存在导致不能添加新的Todo
       }else{
         this.todoList.push({
           title: this.newTodo,
