@@ -2,37 +2,33 @@
   <div id='signUpOrLogin'>
     <section>
       <div class="button">
-        <el-button @click="actionType = 'signUp'">Sign up</el-button>
         <el-button @click="actionType = 'login'">Login</el-button>
+        <el-button @click="actionType = 'signUp'">Sign up</el-button>
       </div>
       <div class="signUp" v-if="actionType == 'signUp'">
         <div class="formRow">
-          <p>UserName</p>
-          <input type="text" v-model="formData.username" placeholder="输入用户名">
+          <input type="text" v-model="formData.username" placeholder="注册用户名">
         </div>
         <div class="formRow">
-          <p>Password</p>
           <input type="password" v-model="formData.password" @keyup.enter="signUp" placeholder="密码">
         </div>
         <!-- <div class="formRow">
             确认密码<input type="password" v-model="formData.comfirmPassword" >
         </div> -->
         <div class="formActions">
-          <button value="" @click="signUp">注册</button>
+          <!-- <button value="" @click="signUp">注册</button> -->
         </div>
       </div>
       <div class="login" v-if="actionType == 'login'">
         <div class="formRow">
-          <p>UserName</p>
-          <input type="text" v-model="formData.username" placeholder="输入用户名">
+          <input type="text" v-model="formData.username" placeholder="输入登录名">
         </div>
         <div class="formRow">
-          <p>Password</p>
           <input type="password" v-model="formData.password"
                    @keyup.enter="login" placeholder="密码">
         </div>
         <div class="formActions">
-          <button value="" @click="login">登录</button>
+          <!-- <button value="" @click="login">登录</button> -->
         </div>
       </div>
     </section>
@@ -46,7 +42,7 @@
     name: 'SignUpOrLogin',
     data() {
       return {
-        actionType: 'signUp',
+        actionType: 'login',
         formData: {
           username: '',
           password: '',
@@ -70,25 +66,25 @@
     justify-content: center; align-items: center; height: 100vh;
     section { background: #fff; box-shadow: 0 10px 30px 0 rgba(0, 0, 0, .15); border-radius: 4px;
       padding: 30px 20px; width: 400px;
-      .formRow { border: 1px solid #c1c1c1; padding: 4px 8px;
-        p { color: #c1c1c1; }
+      .formRow { border: 1px solid #dcdfe6; border-radius: 4px;
         &:first-child { border-bottom: 0; }
-        input { outline: none; border: 0; }
+        input { outline: none; border: 0;padding: 12px 8px; }
       }
       .formActions { margin: 8px 0; }
       .button{
-            .el-button {
-                color: black;
-            }
-            .el-button:hover {
-                background: black;
-                color: white;
-                border: black;
-            }
-            .el-button:focus {
-                background: black;
-                color: white;
-            }
+        .el-button {
+          color: black;
+          margin-bottom: 16px;
+        }
+        .el-button:hover {
+          background: black;
+          color: white;
+          border: black;
+        }
+        .el-button:focus {
+          background: black;
+          color: white;
+        }
       }
     }
   }
