@@ -91,7 +91,7 @@
         padding: 8px;
         width: 80px;
         height: 40px;
-        margin-right: 8px; 
+        margin-right: 20px; 
         border-radius: 8px;
         border-radius: 8px;
         &.signUp {
