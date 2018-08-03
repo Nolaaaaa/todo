@@ -2,22 +2,8 @@
   <div id='signUpOrLogin'>
     <section>
       <div class="button">
-        <el-button @click="actionType = 'login'">Login</el-button>
-        <el-button @click="actionType = 'signUp'">Sign up</el-button>
-      </div>
-      <div class="signUp" v-if="actionType == 'signUp'">
-        <div class="formRow">
-          <input type="text" v-model="formData.username" placeholder="注册用户名">
-        </div>
-        <div class="formRow">
-          <input type="password" v-model="formData.password" @keyup.enter="signUp" placeholder="密码">
-        </div>
-        <!-- <div class="formRow">
-            确认密码<input type="password" v-model="formData.comfirmPassword" >
-        </div> -->
-        <div class="formActions">
-          <!-- <button value="" @click="signUp">注册</button> -->
-        </div>
+        <button @click="actionType = 'login'" class="login">Login</button>
+        <button @click="actionType = 'signUp'" class="signUp">Sign up</button>
       </div>
       <div class="login" v-if="actionType == 'login'">
         <div class="formRow">
@@ -28,7 +14,18 @@
                    @keyup.enter="login" placeholder="密码">
         </div>
         <div class="formActions">
-          <!-- <button value="" @click="login">登录</button> -->
+          <button value="" @click="login" class="login">Login</button>
+        </div>
+      </div>
+      <div class="signUp" v-if="actionType == 'signUp'">
+        <div class="formRow">
+          <input type="text" v-model="formData.username" placeholder="注册用户名">
+        </div>
+        <div class="formRow">
+          <input type="password" v-model="formData.password" @keyup.enter="signUp" placeholder="密码">
+        </div>
+        <div class="formActions">
+          <button value="" @click="signUp" class="signUp" >Sign up</button>
         </div>
       </div>
     </section>
@@ -42,7 +39,7 @@
     name: 'SignUpOrLogin',
     data() {
       return {
-        actionType: 'login',
+        actionType: '',
         formData: {
           username: '',
           password: '',
@@ -56,34 +53,64 @@
       },
       login() {
         this.$emit("login", this.formData)
-      },
-
+      }
     }
   }
 </script>
 <style lang="scss">
-  #signUpOrLogin { background: white; display: flex; flex-direction: column;
+  #signUpOrLogin { 
+    background:  rgb(220, 224, 228) url(https://i.loli.net/2018/08/03/5b645445aa765.jpg) no-repeat center center; 
+    background-size:100% 100%;
+    display: flex; flex-direction: column;
     justify-content: center; align-items: center; height: 100vh;
-    section { background: #fff; box-shadow: 0 10px 30px 0 rgba(0, 0, 0, .15); border-radius: 4px;
-      padding: 30px 20px; width: 400px;
-      .formRow { border: 1px solid #dcdfe6; border-radius: 4px;
+    section { 
+      // background: #fff; box-shadow: 0 10px 30px 0 rgba(0, 0, 0, .15); border-radius: 4px;
+      // padding: 30px 20px; width: 400px;
+      .formRow { border: 1px solid #dcdfe6; border-radius: 8px;
         &:first-child { border-bottom: 0; }
-        input { outline: none; border: 0;padding: 12px 8px; }
+        input { 
+          outline: none; border: 0;padding: 12px 8px; 
+          background: transparent;color: black;
+          width: 100%;
+        }
+        input::-webkit-input-placeholder{
+            color:white;   //修改placeholder的颜色
+        }
+
       }
-      .formActions { margin: 8px 0; }
-      .button{
-        .el-button {
-          color: black;
-          margin-bottom: 16px;
+      .formActions { 
+        margin: 8px 0; 
+      }
+      .button {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 8px;
+      }
+      button{
+        padding: 8px;
+        width: 80px;
+        height: 40px;
+        margin-right: 8px; 
+        border-radius: 8px;
+        border-radius: 8px;
+        &.signUp {
+          margin-right: 0;    
+            color: #fff;
+            background-color: #409eff;
+            border-color: #409eff;
+          &:hover,&focus{
+            background: #66b1ff;
+            border-color: #66b1ff;
+            color: #fff;
+          }
         }
-        .el-button:hover {
-          background: black;
-          color: white;
-          border: black;
-        }
-        .el-button:focus {
-          background: black;
-          color: white;
+        &.login {
+          &:hover,&focus{
+            background: #fff;
+            border-color: #409eff;
+            color: #409eff;
+          }
         }
       }
     }

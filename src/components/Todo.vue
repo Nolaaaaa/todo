@@ -71,8 +71,6 @@ export default {
       avTodos.set('content', dataString)
       avTodos.save().then(()=>{
         console.log('更新成功')
-        console.log(this.todoList.id)
-        console.log(avTodos)
       })
     },
     saveAVTodo() {
@@ -179,11 +177,12 @@ export default {
     display: flex;
     justify-content: flex-start;
     flex-direction: column;
+    margin: 10px;
     li {
       display: flex;
       justify-content: space-between; //左右排布
       align-items: center;   //x轴居中对齐
-      margin: 4px 0;
+      margin: 10px 0;
       .el-icon-edit:before{
         margin: 0 4px;
         color: #2d83da;

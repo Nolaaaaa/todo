@@ -1,10 +1,5 @@
 <template>
     <div id="app">
-        <!-- app vue 算是一个总的模版
-        它里面有 todo 和 SignUpOrLogin 模块
-        SignUpOrLogin 是一个包括 登录 和 注册的模块 代码不是很多就不需要拆
-        todo 就是一个展示用户 todo 的模块
-        一共两个模块即可 -->
         <SignUpOrLogin v-if="!currentUser" @signUp="signUp" @login="login"/>
         <Todo v-else @logout="logout" :currentUser="currentUser"/>
     </div>
