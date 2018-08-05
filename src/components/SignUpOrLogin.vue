@@ -126,6 +126,7 @@
           }
         }
         &.login {
+          background: white;
           &:hover,&focus{
             background: #fff;
             border-color: #409eff;
