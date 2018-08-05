@@ -11,7 +11,7 @@
         </div>
         <div class="formRow">
           <input type="password" v-model="formData.password"
-                   @keyup.enter="login" placeholder="密码">
+            @keyup.enter="login" placeholder="密码">
         </div>
         <div class="formActions">
           <button value="" @click="login" class="login">Login</button>
@@ -23,7 +23,10 @@
           <input type="text" v-model="formData.username" placeholder="注册用户名">
         </div>
         <div class="formRow">
-          <input type="password" v-model="formData.password" @keyup.enter="signUp" placeholder="密码">
+          <input type="password" v-model="formData.password" placeholder="密码">
+          <!-- <input type="password" v-model="formData.rePassword"
+             placeholder="密码确认">
+            <span>@{{passwordCheckValidate.errorText}}</span> -->
         </div>
         <div class="formActions">
           <button value="" @click="signUp" class="signUp" >Sign up</button>
@@ -44,10 +47,19 @@
         formData: {
           username: '',
           password: '',
+          rePassword: '',
           comfirmPassword: '',
         },
         hide: false,
       }
+    },
+    computed: {
+      // passwordCheckValidate: function() {
+      //   var errorText;
+      //   if(this.password !==this.rePassword ){
+      //       errorText = '两次密码不匹配'
+      //   }
+      // }
     },
     methods: {
       signUp() {   //注册 _user
