@@ -2,8 +2,8 @@
   <div id='signUpOrLogin'>
     <section>
       <div class="button">
-        <button @click="actionType = 'login'" class="login">Login</button>
-        <button @click="actionType = 'signUp'" class="signUp">Sign up</button>
+        <button  class="login" :class="{hide:this.hide}" @click="chooseState('login')">Login</button>
+        <button  class="signUp" :class="{hide:this.hide}" @click="chooseState('signUp')">Sign up</button>
       </div>
       <div class="login" v-if="actionType == 'login'">
         <div class="formRow">
@@ -15,6 +15,7 @@
         </div>
         <div class="formActions">
           <button value="" @click="login" class="login">Login</button>
+          <span @click="loginOrSignUpStatus('signUp')">To Sign up<i class="el-icon-arrow-right"></i></span>
         </div>
       </div>
       <div class="signUp" v-if="actionType == 'signUp'">
@@ -26,6 +27,7 @@
         </div>
         <div class="formActions">
           <button value="" @click="signUp" class="signUp" >Sign up</button>
+          <span  @click="loginOrSignUpStatus('login')">To Login<i class="el-icon-arrow-right"></i></span>
         </div>
       </div>
     </section>
@@ -34,7 +36,6 @@
 
 <script>
   import AV from 'leancloud-storage'
-
   export default {
     name: 'SignUpOrLogin',
     data() {
@@ -45,6 +46,7 @@
           password: '',
           comfirmPassword: '',
         },
+        hide: false,
       }
     },
     methods: {
@@ -53,6 +55,13 @@
       },
       login() {
         this.$emit("login", this.formData)
+      },
+      chooseState(status) {
+            this.hide = !this.hide
+            this.loginOrSignUpStatus(status)
+      },
+      loginOrSignUpStatus(status) {
+            this.actionType = status
       }
     }
   }
@@ -60,7 +69,9 @@
 <style lang="scss">
   #signUpOrLogin { 
     background:  rgb(220, 224, 228) url(https://i.loli.net/2018/08/03/5b645445aa765.jpg) no-repeat center center; 
-    background-size:100% 100%;
+    // background-size:100% 100%;
+    max-width: 1920px;
+    max-height: 1080px;
     display: flex; flex-direction: column;
     justify-content: center; align-items: center; height: 100vh;
     section { 
@@ -72,6 +83,7 @@
           outline: none; border: 0;padding: 12px 8px; 
           background: transparent;color: black;
           width: 100%;
+          width: 200px;
         }
         input::-webkit-input-placeholder{
             color:white;   //修改placeholder的颜色
@@ -80,6 +92,14 @@
       }
       .formActions { 
         margin: 8px 0; 
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        span {
+          font-size: 12px;
+          cursor: pointer;
+          color: white;
+        }
       }
       .button {
         display: flex;
@@ -91,7 +111,7 @@
         padding: 8px;
         width: 80px;
         height: 40px;
-        margin-right: 20px; 
+        margin-right: 40px; 
         border-radius: 8px;
         border-radius: 8px;
         &.signUp {
@@ -111,6 +131,9 @@
             border-color: #409eff;
             color: #409eff;
           }
+        }
+        &.hide {
+          display: none;
         }
       }
     }
