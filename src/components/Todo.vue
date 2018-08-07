@@ -182,7 +182,7 @@ export default {
       display: flex;
       justify-content: space-between; //左右排布
       align-items: center;   //x轴居中对齐
-      margin: 10px 0;
+      margin: 10px 0;  
       .el-icon-edit:before{
         margin: 0 4px;
         color: #2d83da;
