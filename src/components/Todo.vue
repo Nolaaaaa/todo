@@ -12,7 +12,7 @@
         <ol class="todos">
           <li v-for="(todo, index) in todoList" :key="todo.id">
             <div>
-              <el-checkbox v-model="todo.checked">{{ todo.title }}
+              <el-checkbox v-model="todo.checked" @click.native="changeDeleteStyle()">{{ todo.title }}
               </el-checkbox>
               <i class="el-icon-edit" @click="editContent(index)"></i>
             </div>
@@ -35,7 +35,6 @@ export default {
       todoList: [],
       checked: false,
       editIndex: null,
-
     }
   },
   mounted() {
@@ -72,6 +71,11 @@ export default {
       avTodos.save().then(()=>{
         console.log('更新成功')
       })
+    },
+    changeDeleteStyle() {
+      if(this.checked == false) return 
+      // this.checked = !this.checked
+      console.log(1111)
     },
     saveAVTodo() {
       // 如果还没有对象，就新建一个对象到Lean，只会存在一个对象
@@ -190,7 +194,7 @@ export default {
       .el-icon-circle-close {   //删除按钮的样式
         color: rgb(250, 42, 15)
       }
-      .el-checkbox__input.is-checked+.el-checkbox__label{ //更改已完成的字体的删除仙女及颜色
+      .el-checkbox__input.is-checked+.el-checkbox__label{ //给已完成的的todo添加删除线及改变其颜色颜色
         color: #dcdfe6;
         text-decoration:line-through;
       }
