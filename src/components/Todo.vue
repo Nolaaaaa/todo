@@ -75,7 +75,6 @@ export default {
     changeDeleteStyle() {
       if(this.checked == false) return 
       // this.checked = !this.checked
-      console.log(1111)
     },
     saveAVTodo() {
       // 如果还没有对象，就新建一个对象到Lean，只会存在一个对象
