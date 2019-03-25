@@ -2,7 +2,7 @@
 <div>
     <section id="todo" >
         <div class="logout">
-          <el-button @click="logout" type="info" >登出</el-button>
+          <!-- <el-button @click="logout" type="info" >登出</el-button> -->
         </div>
         <h1>TodoList</h1>
         <div class="newTask">
