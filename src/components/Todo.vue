@@ -71,7 +71,7 @@ export default {
     },
     changeDeleteStyle(todo) {
       let index = this.todoList.indexOf(todo) // Array.prototype.indexOf ES 5 新加的 API
-      if(!this.todoList[index].checked) this.todoList[index].checked = false
+      if(this.todoList[index].checked == 'undefined') this.todoList[index].checked = false
       this.todoList[index].checked = !this.todoList[index].checked
     },
     saveAVTodo() {
