@@ -11,9 +11,9 @@
         </div>
         <ol class="todos">
           <li v-for="(todo, index) in todoList" :key="todo.id">
-            <div>
-              <el-checkbox v-model="todo.checked" @click.native="changeDeleteStyle()">{{ todo.title }}
-              </el-checkbox>
+            <div class="check-container">
+              <div class="checkbox" :class="{checked:todo.checked}" @click="changeDeleteStyle(todo)"></div>
+              <div class="content"  :class="{checked:todo.checked}">{{ todo.title }}</div>
               <i class="el-icon-edit" @click="editContent(index)"></i>
             </div>
             <i class="el-icon-circle-close" @click="removeTodo(todo)"></i>
@@ -49,19 +49,16 @@ export default {
     this.todoList = oldData || []    //把数据赋值给todoList对象
 
     //批量从云端获取AllTodos
-    if(this.currentUser){
-      var query = new AV.Query('AllTodos')
-      query.find()
-      .then( (todos) => {
-        // console.log(todos) //打印出的是在云端的数组
-        let avAllTodos = todos[0]
-        let id = avAllTodos.id   //找到todos数组的第一个对象的id
-        this.todoList = JSON.parse(avAllTodos.attributes.content) //解析attributes.content中的JSON字符串
-        this.todoList.id = id  //把获取到的id给todoList.id
-      }, function(error) {
-        console.error(error)
-      })
-    }
+    var query = new AV.Query('AllTodos')
+    query.find().then( (todos) => {
+      // console.log(todos) //打印出的是在云端的数组
+      let avAllTodos = todos[0]
+      let id = avAllTodos.id   //找到todos数组的第一个对象的id
+      this.todoList = JSON.parse(avAllTodos.attributes.content) //解析attributes.content中的JSON字符串
+      this.todoList.id = id  //把获取到的id给todoList.id
+    }, function(error) {
+      // console.log(error)
+    })
   },
   methods: {
     updateAVTodo(){
@@ -72,9 +69,10 @@ export default {
         console.log('更新成功')
       })
     },
-    changeDeleteStyle() {
-      if(this.checked == false) return 
-      // this.checked = !this.checked
+    changeDeleteStyle(todo) {
+      let index = this.todoList.indexOf(todo) // Array.prototype.indexOf ES 5 新加的 API
+      if(!this.todoList[index].checked) this.todoList[index].checked = false
+      this.todoList[index].checked = !this.todoList[index].checked
     },
     saveAVTodo() {
       // 如果还没有对象，就新建一个对象到Lean，只会存在一个对象
@@ -87,7 +85,7 @@ export default {
       // 新建一个 ACL 实例
       var acl = new AV.ACL();
       acl.setPublicReadAccess(true);  //能读
-      acl.setWriteAccess(AV.User.current(),true);  //能写
+      // acl.setWriteAccess(AV.User.current(),true);  //能写
       // 将 ACL 实例赋予对象 设置访问控制
       avtodos.setACL(acl)
       //保存到云端
@@ -126,17 +124,20 @@ export default {
     removeTodo(todo) {
       let index = this.todoList.indexOf(todo) // Array.prototype.indexOf ES 5 新加的 API
       this.todoList.splice(index,1)
-      this.saveOrUpdateTodo()
+      console.log(this.todoList)
+      // this.saveOrUpdateTodo()
     },
     editContent(index){
       this.editIndex = index
+      // 编辑的时候恢复未选中状态
+      this.todoList[index].checked = false
       let todoTitle = this.todoList[index].title
       this.newTodo = todoTitle
       this.$refs['input'].focus()    //输入框自动获取焦点
     },
-    logout() {   //注册 _user
-      this.$emit("logout")
-    },
+    // logout() {   //注册 _user
+    //   this.$emit("logout")
+    // },
   }
 }
 </script>
@@ -181,25 +182,55 @@ export default {
     justify-content: flex-start;
     flex-direction: column;
     margin: 10px;
+    .check-container {
+      display: flex;
+      flex-direction: row;
+      align-items: center;   //x轴居中对齐
+      .content {
+        max-width: 340px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;  
+        margin-left: 8px;
+        &.checked {
+          color: #dcdfe6;
+          text-decoration:line-through;
+        }
+      }
+      .checkbox {
+        display: inline-block;
+        position: relative;
+        border: 1px solid #dcdfe6;
+        border-radius: 2px;
+        -webkit-box-sizing: border-box;
+        box-sizing: border-box;
+        width: 14px;
+        height: 14px;
+        background-color: #fff;
+        z-index: 1;
+        -webkit-transition: border-color .25s cubic-bezier(.71,-.46,.29,1.46),background-color .25s cubic-bezier(.71,-.46,.29,1.46);
+        transition: border-color .25s cubic-bezier(.71,-.46,.29,1.46),background-color .25s cubic-bezier(.71,-.46,.29,1.46);
+        &:hover {
+          border-color: #409EFF;
+        }
+        &.checked {
+          background-color: #dcdfe6;
+          border-color: #dcdfe6;
+        }
+      }
+    }
     li {
       display: flex;
       justify-content: space-between; //左右排布
       align-items: center;   //x轴居中对齐
       margin: 10px 0;  
-      .el-icon-edit:before{
+      .el-icon-edit {
+        line-height: 19rpx;
         margin: 0 4px;
         color: #2d83da;
       }
       .el-icon-circle-close {   //删除按钮的样式
         color: rgb(250, 42, 15)
-      }
-      .el-checkbox__input.is-checked+.el-checkbox__label{ //给已完成的的todo添加删除线及改变其颜色颜色
-        color: #dcdfe6;
-        text-decoration:line-through;
-      }
-      .el-checkbox__input.is-checked .el-checkbox__inner, .el-checkbox__input.is-indeterminate .el-checkbox__inner {  //已完成的框框的颜色
-        background-color: #dcdfe6;
-        border-color: #dcdfe6;
       }
     }
   }
