@@ -2,7 +2,7 @@
 <div>
     <section id="todo" >
         <div class="logout">
-          <!-- <el-button @click="logout" type="info" >登出</el-button> -->
+          <el-button @click="logout" type="info" >登出</el-button>
         </div>
         <h1>TodoList</h1>
         <div class="newTask">
@@ -47,18 +47,19 @@ export default {
     let oldDataString = window.localStorage.getItem('myTodos')  //通过window.localStorage读取"myTodos"中的数据
     let oldData = JSON.parse(oldDataString)  //将读取到的JSON字符串解析
     this.todoList = oldData || []    //把数据赋值给todoList对象
-
-    //批量从云端获取AllTodos
-    var query = new AV.Query('AllTodos')
-    query.find().then( (todos) => {
-      // console.log(todos) //打印出的是在云端的数组
-      let avAllTodos = todos[0]
-      let id = avAllTodos.id   //找到todos数组的第一个对象的id
-      this.todoList = JSON.parse(avAllTodos.attributes.content) //解析attributes.content中的JSON字符串
-      this.todoList.id = id  //把获取到的id给todoList.id
-    }, function(error) {
-      // console.log(error)
-    })
+    if(AV.User.current()) {
+      //批量从云端获取AllTodos
+      var query = new AV.Query('AllTodos')
+      query.find().then( (todos) => {
+        // console.log(todos) //打印出的是在云端的数组
+        let avAllTodos = todos[0]
+        let id = avAllTodos.id   //找到todos数组的第一个对象的id
+        this.todoList = JSON.parse(avAllTodos.attributes.content) //解析attributes.content中的JSON字符串
+        this.todoList.id = id  //把获取到的id给todoList.id
+      }, function(error) {
+        // console.log(error)
+      })
+    }
   },
   methods: {
     updateAVTodo(){
@@ -85,7 +86,7 @@ export default {
       // 新建一个 ACL 实例
       var acl = new AV.ACL();
       acl.setPublicReadAccess(true);  //能读
-      // acl.setWriteAccess(AV.User.current(),true);  //能写
+      acl.setWriteAccess(AV.User.current(),true);  //能写
       // 将 ACL 实例赋予对象 设置访问控制
       avtodos.setACL(acl)
       //保存到云端
@@ -125,7 +126,7 @@ export default {
       let index = this.todoList.indexOf(todo) // Array.prototype.indexOf ES 5 新加的 API
       this.todoList.splice(index,1)
       console.log(this.todoList)
-      // this.saveOrUpdateTodo()
+      this.saveOrUpdateTodo()
     },
     editContent(index){
       this.editIndex = index
@@ -135,9 +136,9 @@ export default {
       this.newTodo = todoTitle
       this.$refs['input'].focus()    //输入框自动获取焦点
     },
-    // logout() {   //注册 _user
-    //   this.$emit("logout")
-    // },
+    logout() {   //注册 _user
+      this.$emit("logout")
+    },
   }
 }
 </script>
