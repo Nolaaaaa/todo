@@ -12,8 +12,8 @@
         <ol class="todos">
           <li v-for="(todo, index) in todoList" :key="todo.id">
             <div class="check-container">
-              <div class="checkbox" :class="{checked:todo.checked}" @click="changeDeleteStyle(todo)"></div>
-              <div class="content"  :class="{checked:todo.checked}">{{ todo.title }}</div>
+              <div class="checkbox" v-bind:class="{checked:todo.checked}" @click="changeDeleteStyle(todo)"></div>
+              <div class="content"  :class="{checked:todo.checked}">{{ todo.title }}{{todo.checked}}</div>
               <i class="el-icon-edit" @click="editContent(index)"></i>
             </div>
             <i class="el-icon-circle-close" @click="removeTodo(todo)"></i>
@@ -33,7 +33,6 @@ export default {
     return {
       newTodo: '',
       todoList: [],
-      checked: false,
       editIndex: null,
     }
   },
@@ -57,7 +56,7 @@ export default {
         this.todoList = JSON.parse(avAllTodos.attributes.content) //解析attributes.content中的JSON字符串
         this.todoList.id = id  //把获取到的id给todoList.id
       }, function(error) {
-        // console.log(error)
+        console.log(error)
       })
     }
   },
@@ -72,8 +71,8 @@ export default {
     },
     changeDeleteStyle(todo) {
       let index = this.todoList.indexOf(todo) // Array.prototype.indexOf ES 5 新加的 API
-      if(this.todoList[index].checked == 'undefined') this.todoList[index].checked = false
       this.todoList[index].checked = !this.todoList[index].checked
+      this.updateAVTodo()
     },
     saveAVTodo() {
       // 如果还没有对象，就新建一个对象到Lean，只会存在一个对象
@@ -116,6 +115,7 @@ export default {
       }else{
         this.todoList.push({
           title: this.newTodo,
+          checked: false,
           createdAt: new Date()
         })
         this.newTodo = ''
@@ -125,7 +125,6 @@ export default {
     removeTodo(todo) {
       let index = this.todoList.indexOf(todo) // Array.prototype.indexOf ES 5 新加的 API
       this.todoList.splice(index,1)
-      console.log(this.todoList)
       this.saveOrUpdateTodo()
     },
     editContent(index){
