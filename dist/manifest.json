@@ -1,7 +1,7 @@
 {
-  "name": "Hello Chrome", 
+  "name": "Todo", 
   "version": "1.0", 
-  "description": "Say hello to chrome. I am your first extension.", 
+  "description": "My todo.", 
   "manifest_version": 2,
   "browser_action": { 
     "default_icon": "icon.png"
