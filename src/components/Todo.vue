@@ -1,30 +1,33 @@
 <template>
-<div>
-    <section id="todo" >
-        <div class="logout">
-          <el-button @click="logout" type="info" >登出</el-button>
+  <div>
+  <section id="todo" >
+    <div class="logout">
+      <el-button @click="logout" type="info" >登出</el-button>
+    </div>
+    <h1>TodoList</h1>
+    <div class="newTask">
+      <el-input ref = 'input' v-model="newTodo" placeholder="Add new Todo"
+      @keyup.enter.native="addTodo"></el-input>
+    </div>
+    <ol class="todos">
+      <li v-for="(todo, index) in todoList" :key="todo.id">
+        <div class="check-container">
+          <div class="checkbox" v-bind:class="{checked:todo.checked}" @click="changeDeleteStyle(todo)"></div>
+          <div class="content"  :class="{checked:todo.checked}">{{ todo.title }}</div>
+          <i class="el-icon-edit" @click="editContent(index)"></i>
         </div>
-        <h1>TodoList</h1>
-        <div class="newTask">
-          <el-input ref = 'input' v-model="newTodo" placeholder="Add new Todo"
-          @keyup.enter.native="addTodo"></el-input>
-        </div>
-        <ol class="todos">
-          <li v-for="(todo, index) in todoList" :key="todo.id">
-            <div class="check-container">
-              <div class="checkbox" v-bind:class="{checked:todo.checked}" @click="changeDeleteStyle(todo)"></div>
-              <div class="content"  :class="{checked:todo.checked}">{{ todo.title }}{{todo.checked}}</div>
-              <i class="el-icon-edit" @click="editContent(index)"></i>
-            </div>
-            <i class="el-icon-circle-close" @click="removeTodo(todo)"></i>
-          </li>
-        </ol>
-    </section>
+        <i class="el-icon-circle-close" @click="removeTodo(todo)"></i>
+      </li>
+    </ol>
+  </section>
+  <!-- 落叶动画 -->
+  <Leaves/>
   </div>
 </template>
 
 <script>
 import AV from 'leancloud-storage'
+import Leaves from './Leaves'
 
 export default {
   name: 'Todo',
@@ -35,6 +38,9 @@ export default {
       todoList: [],
       editIndex: null,
     }
+  },    
+  components: {
+    Leaves,
   },
   mounted() {
     this.$refs['input'].focus()  //光标
@@ -116,7 +122,7 @@ export default {
         this.todoList.push({
           title: this.newTodo,
           checked: false,
-          createdAt: new Date()
+          createdAt: new Date().toLocaleString()
         })
         this.newTodo = ''
       }
@@ -186,6 +192,7 @@ export default {
       display: flex;
       flex-direction: row;
       align-items: center;   //x轴居中对齐
+      cursor: pointer;
       .content {
         max-width: 340px;
         overflow: hidden;
@@ -207,7 +214,6 @@ export default {
         width: 14px;
         height: 14px;
         background-color: #fff;
-        z-index: 1;
         -webkit-transition: border-color .25s cubic-bezier(.71,-.46,.29,1.46),background-color .25s cubic-bezier(.71,-.46,.29,1.46);
         transition: border-color .25s cubic-bezier(.71,-.46,.29,1.46),background-color .25s cubic-bezier(.71,-.46,.29,1.46);
         &:hover {
