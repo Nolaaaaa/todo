@@ -63,5 +63,11 @@ export default {
     }
 }
 </script>
+<style>
+* {
+    overflow: hidden;
+}
+</style>
+
 
 
