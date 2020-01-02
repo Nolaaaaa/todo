@@ -1,7 +1,7 @@
 <template>
     <div id="app">
-        <SignUpOrLogin v-if="!currentUser" @signUp="signUp" @login="login"/>
-        <Todo v-else @logout="logout" :currentUser="currentUser"/>
+        <!-- <SignUpOrLogin v-if="!currentUser" @signUp="signUp" @login="login"/> -->
+        <Todo :currentUser="currentUser"/>
     </div>
 </template>
 <script>

@@ -2,7 +2,7 @@
   <div>
   <section id="todo" >
     <div class="logout">
-      <el-button @click="logout" type="info" >登出</el-button>
+      <!-- <el-button @click="logout" type="info" >登出</el-button> -->
     </div>
     <h1>TodoList</h1>
     <div class="newTask">
@@ -16,7 +16,7 @@
           <div class="content"  :class="{checked:todo.checked}">{{ todo.title }}</div>
           <i class="el-icon-edit" @click="editContent(index)"></i>
         </div>
-        <i class="el-icon-circle-close" @click="removeTodo(todo)"></i>
+        <i class="el-icon-circle-close" @click="removeTodo(todo)" v-if="editIndex != index"></i>
       </li>
     </ol>
   </section>
@@ -118,7 +118,7 @@ export default {
         this.todoList[this.editIndex].title = this.newTodo
         this.newTodo = ''
         this.editIndex = null   //不写这句的话前一次的editIndex会一只存在导致不能添加新的Todo
-      }else{
+      } else {
         this.todoList.push({
           title: this.newTodo,
           checked: false,
