@@ -16,7 +16,7 @@ export default {
 }
 </script>
 
-<style>
+<style lang="scss" scoped>
 img {
   height: 60px;
   width: 60px;
@@ -32,7 +32,7 @@ img {
 #leaves7 { top: -10%;left: 95%;animation: lev 5s infinite 1s linear; }
 
 @keyframes lev{
-  0%{top: 0%;transform:rotate(-60deg);}
-  100%{top: 100%;transform:rotate(60deg);}
+  0% { top: 0%; transform: rotate(-60deg); }
+  100% { top: 100%; transform: rotate(60deg); }
 }
 </style>

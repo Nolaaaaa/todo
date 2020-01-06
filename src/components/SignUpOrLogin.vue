@@ -78,7 +78,7 @@
     }
   }
 </script>
-<style lang="scss">
+<style lang="scss" scoped>
   #signUpOrLogin { 
     background:  rgb(220, 224, 228) url(https://i.loli.net/2018/08/03/5b645445aa765.jpg) no-repeat center center; 
     // background-size:100% 100%;

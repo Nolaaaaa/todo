@@ -6,19 +6,25 @@
     </div>
     <h1>TodoList</h1>
     <div class="newTask">
-      <el-input ref = 'input' v-model="newTodo" placeholder="Add new Todo"
+      <el-input ref = 'input' v-model="newTodo" :placeholder="placeholder"
       @keyup.enter.native="addTodo"></el-input>
     </div>
+
     <ol class="todos">
-      <li v-for="(todo, index) in todoList" :key="todo.id">
-        <div class="check-container">
-          <div class="checkbox" v-bind:class="{checked:todo.checked}" @click="changeDeleteStyle(todo)"></div>
-          <div class="content"  :class="{checked:todo.checked}">{{ todo.title }}</div>
-          <i class="el-icon-edit" @click="editContent(index)"></i>
-        </div>
-        <i class="el-icon-circle-close" @click="removeTodo(todo)" v-if="editIndex != index"></i>
-      </li>
+      <DragWrap>
+        <DragItem v-for="(todo, index) in todoList" :key="todo.id">
+          <li>
+            <div class="check-container">
+              <div class="checkbox" v-bind:class="{checked:todo.checked}" @click="changeDeleteStyle(todo)"></div>
+              <div class="content"  :class="{checked:todo.checked}">{{ todo.title }}</div>
+              <i class="el-icon-edit" @click="editContent(index)"></i>
+            </div>
+            <i class="el-icon-circle-close" @click="removeTodo(todo)" v-if="editIndex != index"></i>
+          </li>
+        </DragItem>
+      </DragWrap>
     </ol>
+    
   </section>
   <!-- 落叶动画 -->
   <Leaves/>
@@ -28,6 +34,8 @@
 <script>
 import AV from 'leancloud-storage'
 import Leaves from './Leaves'
+import DragWrap from './DragWrap'
+import DragItem from './DragItem'
 
 export default {
   name: 'Todo',
@@ -39,8 +47,14 @@ export default {
       editIndex: null,
     }
   },    
+  computed: {
+    placeholder() {
+      let isNull = Object.prototype.toString.call(this.editIndex) === "[object Null]"
+      return !isNull?'Edit new Todo':'Add new Todo'
+    }
+  },
   components: {
-    Leaves,
+    Leaves, DragWrap, DragItem, 
   },
   mounted() {
     this.$refs['input'].focus()  //光标
@@ -148,7 +162,7 @@ export default {
 }
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 #todo {
   display: flex;
   flex-direction: column;
@@ -184,10 +198,25 @@ export default {
     width: 400px;
     @media (max-width: 500px) {width: 320px;}
     @media (max-width: 400px) {width: 240px;}
-    display: flex;
-    justify-content: flex-start;
-    flex-direction: column;
     margin: 10px;
+    height: calc(100vh - 300px);
+    overflow: auto;
+
+    /*滚动条样式*/
+    &::-webkit-scrollbar {
+      width: 4px;
+    }
+    &::-webkit-scrollbar-thumb {
+      border-radius: 10px;
+      box-shadow: inset 0 0 5px rgba(0,0,0,0.2);
+      background: rgba(0,0,0,0.2);
+    }
+    &::-webkit-scrollbar-track {
+      box-shadow: inset 0 0 5px rgba(0,0,0,0.2);
+      border-radius: 0;
+      background: rgba(0,0,0,0.1);
+    }
+
     .check-container {
       display: flex;
       flex-direction: row;
