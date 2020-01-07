@@ -21,6 +21,7 @@ img {
   height: 60px;
   width: 60px;
   position: absolute;
+  object-fit: contain;
 }
 
 #leaves1 { top: -10%;left: 5%;animation: lev 5s infinite 3s linear; }

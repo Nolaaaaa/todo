@@ -24,9 +24,6 @@
         </div>
         <div class="formRow">
           <input type="password" v-model="formData.password" placeholder="密码">
-          <!-- <input type="password" v-model="formData.rePassword"
-             placeholder="密码确认">
-            <span>@{{passwordCheckValidate.errorText}}</span> -->
         </div>
         <div class="formActions">
           <button value="" @click="signUp" class="signUp" >Sign up</button>
@@ -54,12 +51,6 @@
       }
     },
     computed: {
-      // passwordCheckValidate: function() {
-      //   var errorText;
-      //   if(this.password !==this.rePassword ){
-      //       errorText = '两次密码不匹配'
-      //   }
-      // }
     },
     methods: {
       signUp() {   //注册 _user
@@ -81,14 +72,11 @@
 <style lang="scss" scoped>
   #signUpOrLogin { 
     background:  rgb(220, 224, 228) url(https://i.loli.net/2018/08/03/5b645445aa765.jpg) no-repeat center center; 
-    // background-size:100% 100%;
     max-width: 1920px;
     max-height: 1080px;
     display: flex; flex-direction: column;
     justify-content: center; align-items: center; height: 100vh;
     section { 
-      // background: #fff; box-shadow: 0 10px 30px 0 rgba(0, 0, 0, .15); border-radius: 4px;
-      // padding: 30px 20px; width: 400px;
       .formRow { border: 1px solid #dcdfe6; border-radius: 8px;
         &:first-child { border-bottom: 0; }
         input { 
@@ -98,7 +86,7 @@
           width: 200px;
         }
         input::-webkit-input-placeholder{
-            color:white;   //修改placeholder的颜色
+          color:white;  
         }
 
       }

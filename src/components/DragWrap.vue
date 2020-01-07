@@ -7,10 +7,27 @@
 <script>
 export default {
   name: 'DragWrap',
+  props: ['list'],
   data() {
     return {
       fromNode: '',
-      toNode: ''
+      toNode: '',
+      childDom: [],  // 原始DOM
+      newList: ''
+    }
+  },
+
+  watch: {
+    newList(newVal, oldVal) {
+      if(newVal) {
+        this.getNewList()
+      }
+    }
+  },
+
+  methods: {
+    getNewList() {
+      this.$emit('newList', this.newList)
     }
   }
 }

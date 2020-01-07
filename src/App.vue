@@ -6,8 +6,8 @@
 </template>
 <script>
 import AV from 'leancloud-storage'
-import Todo from './components/Todo'
-import SignUpOrLogin from './components/SignUpOrLogin'
+import Todo from '@/pages/Todo'
+import SignUpOrLogin from '@/pages/SignUpOrLogin'
 export default {
     name: 'App',
     components: {

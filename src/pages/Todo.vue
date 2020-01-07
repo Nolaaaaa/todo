@@ -10,12 +10,12 @@
       @keyup.enter.native="addTodo"></el-input>
     </div>
 
-    <ol class="todos">
-      <DragWrap>
+    <ol class="todos" v-if="todoList">
+      <DragWrap :list="todoList" @newList="getNewList">
         <DragItem v-for="(todo, index) in todoList" :key="todo.id">
           <li>
             <div class="check-container">
-              <div class="checkbox" v-bind:class="{checked:todo.checked}" @click="changeDeleteStyle(todo)"></div>
+              <div class="checkbox" v-bind:class="{checked:todo.checked}" @click="changeChecked(todo)"></div>
               <div class="content"  :class="{checked:todo.checked}">{{ todo.title }}</div>
               <i class="el-icon-edit" @click="editContent(index)"></i>
             </div>
@@ -33,9 +33,9 @@
 
 <script>
 import AV from 'leancloud-storage'
-import Leaves from './Leaves'
-import DragWrap from './DragWrap'
-import DragItem from './DragItem'
+import Leaves from '@/components/Leaves'
+import DragWrap from '@/components/DragWrap'
+import DragItem from '@/components/DragItem'
 
 export default {
   name: 'Todo',
@@ -44,6 +44,7 @@ export default {
     return {
       newTodo: '',
       todoList: [],
+      newTodoList: '',
       editIndex: null,
     }
   },    
@@ -58,29 +59,93 @@ export default {
   },
   mounted() {
     this.$refs['input'].focus()  //光标
-    // 页面刷新后依然保留数据
-    window.onbeforeunload = ()=>{       //页面刷新时调用
-      let dataString = JSON.stringify(this.todoList)   //将todoList对象转化为JSON字符串 dataString
-      window.localStorage.setItem('myTodos', dataString) //通过window.localStorage添加dataString数据到"myTodos"中
-    }
-    let oldDataString = window.localStorage.getItem('myTodos')  //通过window.localStorage读取"myTodos"中的数据
-    let oldData = JSON.parse(oldDataString)  //将读取到的JSON字符串解析
-    this.todoList = oldData || []    //把数据赋值给todoList对象
-    if(AV.User.current()) {
-      //批量从云端获取AllTodos
-      var query = new AV.Query('AllTodos')
-      query.find().then( (todos) => {
-        // console.log(todos) //打印出的是在云端的数组
-        let avAllTodos = todos[0]
-        let id = avAllTodos.id   //找到todos数组的第一个对象的id
-        this.todoList = JSON.parse(avAllTodos.attributes.content) //解析attributes.content中的JSON字符串
-        this.todoList.id = id  //把获取到的id给todoList.id
-      }, function(error) {
-        console.log(error)
-      })
-    }
+    this.getTodoList()
   },
   methods: {
+    getNewList(e) {  
+      this.newTodoList = e
+    },
+    
+    getTodoList() {
+      window.onbeforeunload = () => { 
+        let newTodoList = this.newTodoList
+        let todoList = this.todoList
+        if(newTodoList) { todoList =  newTodoList }
+        window.localStorage.setItem('myTodos', JSON.stringify(todoList)) 
+      }
+      let oldDataString = window.localStorage.getItem('myTodos')
+      let oldData = JSON.parse(oldDataString)  
+      this.todoList = oldData || []  
+
+      // 批量从云端获取AllTodos
+      if(AV.User.current()) {
+        var query = new AV.Query('AllTodos')
+        query.find().then( (todos) => {
+          // console.log(todos) //打印出的是在云端的数组
+          let avAllTodos = todos[0]
+          let id = avAllTodos.id   //找到todos数组的第一个对象的id
+          this.todoList = JSON.parse(avAllTodos.attributes.content) //解析attributes.content中的JSON字符串
+          this.todoList.id = id  //把获取到的id给todoList.id
+        }, function(error) {
+          console.log(error)
+        })
+      }
+    },
+
+    addTodo() {
+      // id 存不存在 这个列表中
+      // 如果不存在 就push
+      // 如果存在 就 edit
+      if(!this.newTodo) return
+      if(this.editIndex || this.editIndex === 0) {
+        this.todoList[this.editIndex].title = this.newTodo
+        this.newTodo = ''
+        this.editIndex = null   //不写这句的话前一次的editIndex会一只存在导致不能添加新的Todo
+      } else {
+        this.todoList.push({
+          title: this.newTodo,
+          checked: false,
+          createdAt: new Date().toLocaleString()
+        })
+        this.newTodo = ''
+      }
+      this.saveOrUpdateTodo()
+    },
+
+    editContent(index){
+      this.editIndex = index
+      // 编辑的时候恢复未选中状态
+      this.todoList[index].checked = false
+      let todoTitle = this.todoList[index].title
+      this.newTodo = todoTitle
+      this.$refs['input'].focus()    //输入框自动获取焦点
+    },
+
+    removeTodo(todo) {
+      let index = this.todoList.indexOf(todo) // Array.prototype.indexOf ES 5 新加的 API
+      this.todoList.splice(index,1)
+      this.saveOrUpdateTodo()
+    },
+    
+    
+    saveOrUpdateTodo() {
+      if(this.todoList.id){
+        this.updateAVTodo()
+      }else{
+        this.saveAVTodo()
+      }
+    },
+
+    changeChecked(todo) {
+      let index = this.todoList.indexOf(todo) // Array.prototype.indexOf ES 5 新加的 API
+      this.todoList[index].checked = !this.todoList[index].checked
+      this.updateAVTodo()
+    },
+
+    logout() {   //注册 _user
+      this.$emit("logout")
+    },
+
     updateAVTodo(){
       let dataString = JSON.stringify(this.todoList)
       let avTodos = AV.Object.createWithoutData('AllTodos', this.todoList.id)
@@ -89,11 +154,7 @@ export default {
         console.log('更新成功')
       })
     },
-    changeDeleteStyle(todo) {
-      let index = this.todoList.indexOf(todo) // Array.prototype.indexOf ES 5 新加的 API
-      this.todoList[index].checked = !this.todoList[index].checked
-      this.updateAVTodo()
-    },
+
     saveAVTodo() {
       // 如果还没有对象，就新建一个对象到Lean，只会存在一个对象
       // 单用户权限设置
@@ -115,48 +176,6 @@ export default {
       }, function (error) {
         console.log(error)
       })
-    },
-    saveOrUpdateTodo() {
-      if(this.todoList.id){
-        this.updateAVTodo()
-      }else{
-        this.saveAVTodo()
-      }
-    },
-    addTodo() {
-      // id 存不存在 这个列表中
-      // 如果不存在 就push
-      // 如果存在 就 edit
-      if(!this.newTodo) return
-      if(this.editIndex || this.editIndex === 0) {
-        this.todoList[this.editIndex].title = this.newTodo
-        this.newTodo = ''
-        this.editIndex = null   //不写这句的话前一次的editIndex会一只存在导致不能添加新的Todo
-      } else {
-        this.todoList.push({
-          title: this.newTodo,
-          checked: false,
-          createdAt: new Date().toLocaleString()
-        })
-        this.newTodo = ''
-      }
-      this.saveOrUpdateTodo()
-    },
-    removeTodo(todo) {
-      let index = this.todoList.indexOf(todo) // Array.prototype.indexOf ES 5 新加的 API
-      this.todoList.splice(index,1)
-      this.saveOrUpdateTodo()
-    },
-    editContent(index){
-      this.editIndex = index
-      // 编辑的时候恢复未选中状态
-      this.todoList[index].checked = false
-      let todoTitle = this.todoList[index].title
-      this.newTodo = todoTitle
-      this.$refs['input'].focus()    //输入框自动获取焦点
-    },
-    logout() {   //注册 _user
-      this.$emit("logout")
     },
   }
 }

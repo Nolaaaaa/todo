@@ -17,29 +17,47 @@ export default {
       startDrag: false
     }
   },    
-  created() {
+  mounted() {
+    this.$parent.childDom.push(this.$el)
   },
 
   methods: {
     onStart() {
       this.startDrag = true
-
-      this.$parent._data.fromNode = this.$el
+      this.$parent.fromNode = this.$el
     },
     
     onEnter() {
-      this.$parent._data.toNode = this.$el
+      this.$parent.toNode = this.$el
+      let { fromNode, toNode } = this.$parent._data
+      this.$parent.$el.insertBefore(fromNode, this.isPreNode(fromNode,toNode)?toNode:toNode.nextSibling)
 
-      let parent = this.$parent
-      let fromNode = parent._data.fromNode
-      let toNode = parent._data.toNode
-      
-      parent.$el.insertBefore(fromNode, toNode.nextSibling)
     },
 
     onEnd() {
       this.startDrag = false
-    }
+      let { list, childDom } = this.$parent
+      let newChildDom = [...this.$parent.$el.children]
+      
+      let newList = []
+      for(let i = 0; i < list.length; i++) {
+        for(let j = 0; j < list.length; j++) {
+          if(childDom[i] == newChildDom[j]) {
+            newList[j] = list[i]
+          }
+        }
+      }
+      this.$parent.newList = newList
+    },
+
+    isPreNode(from, to) {
+      while(from.previousSibling !== null) {
+        if(from.previousSibling === to) {
+          return true
+        }
+        from = from.previousSibling
+      }
+    },
   }
 }
 </script>
@@ -48,7 +66,11 @@ export default {
 .drag {
   opacity: 1;
   &.start {
-    opacity: 0.2;
+    opacity: 0.5;
+    padding: 0 10px;
+    zoom: 1.1;
+    box-shadow: 0px 0px 7px 1px #8eb7e0;
+    border: 1px solid #2d83da;
   }
 }
 </style>>
